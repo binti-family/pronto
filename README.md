@@ -125,7 +125,7 @@ in order to avoid the rate limit of the providers.
 X = N / {PRONTO_WARNINGS_PER_REVIEW || warnings_per_review || 30})
 ```
 
-Note: In case no environment variable or config setting is specified in `.pronto.yml`, 
+Note: In case no environment variable or config setting is specified in `.pronto.yml`,
       a default value of `30` will be used.
 
 ```sh
@@ -164,7 +164,7 @@ Pronto.run('origin/master', '.', formatters)
 
 #### GitHub Actions Integration
 
-You can also run Pronto as a GitHub action. 
+You can also run Pronto as a GitHub action.
 
 Here's an example `.github/workflows/pronto.yml` workflow file using the `github_status` and `github_pr` formatters and running on each GitHub PR, with `pronto-rubocop` as the runner:
 
@@ -222,7 +222,7 @@ Merge request integration:
 $ PRONTO_GITLAB_API_PRIVATE_TOKEN=token PRONTO_PULL_REQUEST_ID=id pronto run -f gitlab_mr -c origin/master
 ```
 
-On GitLabCI make make sure to run Pronto in a [merge request pipeline](https://docs.gitlab.com/ce/ci/merge_request_pipelines/):
+On GitLabCI, make sure to run Pronto in a [merge request pipeline](https://docs.gitlab.com/ce/ci/merge_request_pipelines/):
 
 ```yml
 lint:
@@ -261,7 +261,14 @@ $ PRONTO_BITBUCKET_USERNAME=user PRONTO_BITBUCKET_PASSWORD=pass pronto run -f bi
 ## Configuration
 
 The behavior of Pronto can be controlled via the `.pronto.yml` configuration
-file. It must be placed in your project directory.
+file. It can either be placed in the working directory (*) or specified using
+the environment variable `PRONTO_CONFIG_FILE`.
+
+(*) The working directory is where you run the command from, which is typically
+your project directory.
+
+If this file cannot be found, then the default configuration in
+[Pronto::ConfigFile::EMPTY](lib/pronto/config_file.rb) applies.
 
 The file has the following format:
 
@@ -290,12 +297,22 @@ bitbucket:
 max_warnings: 150
 warnings_per_review: 30
 verbose: false
+runners: [rubocop, eslint] # only listed runners will be executed
+skip_runners: [reek] # all, except listed runners will be executed
 ```
 
 All properties that can be specified via `.pronto.yml`, can also be specified
 via environment variables. Their names will be the upcased path to the property.
 For example: `PRONTO_GITHUB_SLUG` or `PRONTO_GITLAB_API_PRIVATE_TOKEN`. Environment variables
 will always take precedence over values in configuration file.
+
+| Property              | Description                                                                          |
+|-----------------------|--------------------------------------------------------------------------------------|
+| `max_warnings`        | Limits the amount of warnings. Returns all warnings if option is skipped.            |
+| `runners`             | Runs only listed runners. Runs everything if option is skipped.                      |
+| `skip_runners`        | All, except listed runners will be executed. Runs everything if option is skipped.   |
+| `verbose`             | Outputs more information when set to `true`.                                         |
+| `warnings_per_review` | Limits the amount of warnings per review. Returns all warnings if option is skipped. |
 
 ### Message format
 
@@ -342,7 +359,6 @@ Currently available:
 * [pronto-bigfiles](https://github.com/apiology/pronto-bigfiles)
 * [pronto-blacklist](https://github.com/pbstriker38/pronto-blacklist)
 * [pronto-brakeman](https://github.com/prontolabs/pronto-brakeman)
-* [pronto-bundler_audit](https://github.com/pdobb/pronto-bundler_audit)
 * [pronto-checkstyle](https://github.com/seikichi/pronto-checkstyle)
 * [pronto-coffeelint](https://github.com/siebertm/pronto-coffeelint)
 * [pronto-clang_format](https://github.com/micjabbour/pronto-clang_format)
@@ -410,12 +426,13 @@ Articles to help you to get started:
 * [How to end fruitless dev discussions about your project’s code style?](https://medium.com/appaloosa-store-engineering/how-to-end-fruitless-dev-discussions-about-your-project-s-code-style-245070bff6d4)
 * [Free automated code reviews using Pronto](https://hovancik.net/blog/2016/04/11/free-automated-code-reviews-using-pronto/)
 * [Automated Elixir code review with Github, Credo and Travis CI](https://medium.com/fazibear/automated-elixir-code-review-with-github-credo-and-travis-ci-986cd56b8f02)
-* [Running Rubocop before git commit](https://christoph.luppri.ch/articles/2016/11/21/running-rubocop-before-git-commit/)
+* [Running Rubocop before git commit](https://web.archive.org/web/20181225040512/https://christoph.luppri.ch/articles/code-quality/running-rubocop-before-git-commit/)
 * [Pronto, Codeship and GitHub for automatic code review](http://abinoam.tl1n.com/pronto-codeship-and-github-for-automatic-code-review/)
-* [How to automatically review your PRs for style violations with Pronto and RuboCop](https://christoph.luppri.ch/articles/2017/03/05/how-to-automatically-review-your-prs-for-style-violations-with-pronto-and-rubocop/)
+* [How to automatically review your PRs for style violations with Pronto and RuboCop](https://christoph.luppri.ch/how-to-automatically-review-your-prs-for-style-violations-with-pronto-and-rubocop)
 * [Create your own Pronto Runner](https://kevinjalbert.com/create-your-own-pronto-runner/)
 * [Make Code Reviews A Little Bit Better With Automation](https://medium.com/jimmy-farrell/make-codes-reviews-a-little-bit-better-with-automation-35640df08a62)
 * [Stop shipping untested Ruby code with undercover](https://medium.com/futuredev/stop-shipping-untested-ruby-code-with-undercover-1edc963be4a6)
+* [Automatic code review with Pronto and GitHub Actions](https://everydayrails.com/2021/05/29/pronto-github-actions-code-quality.html)
 
 Make a Pull Request to add something you wrote or found useful.
 

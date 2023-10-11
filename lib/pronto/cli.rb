@@ -20,7 +20,6 @@ module Pronto
 
     method_option :commit,
                   type: :string,
-                  default: 'master',
                   aliases: '-c',
                   desc: 'Commit for the diff'
 
@@ -32,6 +31,11 @@ module Pronto
     method_option :staged,
                   type: :boolean,
                   desc: 'Analyze changes in git staging area'
+
+    method_option :workdir,
+                  type: :boolean,
+                  aliases: ['-w'],
+                  desc: 'Analyze both staged and unstaged changes'
 
     method_option :runner,
                   type: :array,
@@ -55,7 +59,7 @@ module Pronto
 
       formatters = ::Pronto::Formatter.get(options[:formatters])
 
-      commit_options = %i[staged unstaged index]
+      commit_options = %i[workdir staged unstaged index]
       commit = commit_options.find { |o| options[o] } || options[:commit]
 
       repo_workdir = ::Rugged::Repository.discover(path).workdir
