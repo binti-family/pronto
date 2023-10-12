@@ -25,6 +25,20 @@ module Pronto
                                 }.merge(options || {})
                               )
                             ]
+                          when :all
+                            merge_base = merge_base(Config.new.default_commit)
+                            patches =
+                              @repo.diff(merge_base, head, options).merge!(
+                                @repo.diff_workdir(
+                                  head,
+                                  {
+                                    include_untracked: true,
+                                    include_untracked_content: true,
+                                    recurse_untracked_dirs: true,
+                                  }.merge(options || {}),
+                                ),
+                              )
+                            [merge_base, patches]
                           else
                             merge_base = merge_base(commit)
                             patches = @repo.diff(merge_base, head, options)

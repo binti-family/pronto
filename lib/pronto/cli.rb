@@ -37,6 +37,11 @@ module Pronto
                   aliases: ['-w'],
                   desc: 'Analyze both staged and unstaged changes'
 
+    method_option :all,
+                  type: :boolean,
+                  aliases: ['-a'],
+                  desc: 'Analyze unstaged, staged, and committed changes'
+
     method_option :runner,
                   type: :array,
                   default: [],
